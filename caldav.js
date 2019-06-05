@@ -1,19 +1,26 @@
-var dav = require('dav');
+var ics = require('ics');
+var caldav = require('@datafire/caldav');
 
 const env = process.env;
 
-var xhr = new dav.transport.Basic(
-  new dav.Credentials({
+caldav = caldav.create({
     username: env.USER,
-    password: env.PASSWORD
-  })
-);
-
-dav.createAccount({ server: env.URL, xhr: xhr })
-.then(function(account) {
-  // account instanceof dav.Account
-  account.calendars.forEach(function(calendar) {
-    console.log('Found calendar named ' + calendar.displayName);
-    // etc.
-  });
+    password: env.PASSWORD,
+    server: env.SERVER,
+    basePath: "/remote.php/dav",
+    principalPath: "/principals"
 });
+
+
+
+caldav.listCalendars({}).then(data => {
+      console.log(data);
+});
+
+
+var newEvent = ics.createEvent({
+    title: 'test ics',
+    start: [2019, 6, 6, 12, 0],
+    duration: { minutes: 0 }
+});
+

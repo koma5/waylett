@@ -4,8 +4,9 @@
   "description": "some basic notification bot",
   "main": "server.js",
   "dependencies": {
+    "@datafire/caldav": "^2.0.2",
     "chrono-node": "^1.3.11",
-    "dav": "^1.8.0"
+    "ics": "^2.13.2"
   },
   "repository": {
     "type": "git",
