@@ -1,9 +1,6 @@
 var ics = require('ics');
-var caldav = require('@datafire/caldav');
-
 const env = process.env;
-
-caldav = caldav.create({
+var caldav = require('@datafire/caldav').create({
     username: env.USER,
     password: env.PASSWORD,
     server: env.SERVER,
@@ -16,6 +13,20 @@ caldav = caldav.create({
 caldav.listCalendars({}).then(data => {
       console.log(data);
 });
+
+
+caldav.listEvents({ "filename": "/calendars/" + env.USER + "/" + env.CALENDER
+}).then(data => {
+      console.log(data);
+});
+
+caldav.createEvent({
+    start: "2019-06-07T20:22:00.000+05:00",
+    end: "2019-06-07T20:22:22.000Z",
+    summary: "first!!",
+    filename: "/calendars/" + env.USER + "/" + env.CALENDER + "/aiiisdddwwww.ics"
+}).then(data => {console.log(data)});
+
 
 
 var newEvent = ics.createEvent({
