@@ -25,7 +25,7 @@ caldav.listEvents({ "filename": "/calendars/" + env.USER + "/" + env.CALENDER
 });
 */
 
-var text = "postcard in 48 hours"
+var text = process.argv[2]
 var parseResults = chrono.parse(text)
 var eventFilename = uuidv1();
 
@@ -39,7 +39,8 @@ if (parseResults.length > 0) {
         var endDate = startDate;
     }
 }
-console.log(startDate, endDate)
+
+console.log(eventFilename, eventName, startDate, endDate)
 
 caldav.createEvent({
     start: startDate.toString(),
