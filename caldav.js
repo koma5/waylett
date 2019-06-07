@@ -41,21 +41,28 @@ function createEventFrom(text) {
         var startDate = parseResults[0].start.date();
         try {
             var endDate = parseResults[0].end.date();
+            var summary = [eventName, '\n', startDate, '\n', endDate].join(' ')
         }
         catch(error){
             var endDate = startDate;
+            var summary = [eventName, '\n', startDate].join(' ')
         }
     }
 
+    try {
+        caldav.createEvent({
+            start: startDate.toString(),
+            end: endDate.toString(),
+            summary: eventName,
+            filename: "/calendars/" + env.USER + "/" + env.CALENDER + "/" + eventFilename
+        }).then(data => {console.log(data)});
 
-    caldav.createEvent({
-        start: startDate.toString(),
-        end: endDate.toString(),
-        summary: eventName,
-        filename: "/calendars/" + env.USER + "/" + env.CALENDER + "/" + eventFilename
-    }).then(data => {console.log(data)});
-    
-    return [eventFilename, eventName, startDate, endDate].join(' ')
+        return summary
+    }
+    catch(error) {
+        return "failed to parse a date"
+    }
+
 
 }
 
