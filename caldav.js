@@ -31,7 +31,7 @@ function createEventFrom(text) {
     }
 
     try {
-        if (startDate === undeifined) throw("uuups");
+        if (startDate === undefined) throw("uuups");
 
         caldav.addEvent({
             startDate: startDate,
