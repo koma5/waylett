@@ -31,6 +31,8 @@ function createEventFrom(text) {
     }
 
     try {
+        if (startDate === undeifined) throw("uuups");
+
         caldav.addEvent({
             startDate: startDate,
             endDate: endDate,
@@ -47,7 +49,7 @@ function createEventFrom(text) {
         return summary
     }
     catch(error) {
-        return "failed to parse a date"
+        return "failed to parse a date."
     }
 
 
