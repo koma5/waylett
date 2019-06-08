@@ -2,34 +2,15 @@ var chrono = require('chrono-node');
 var moment = require('moment');
 var uuidv1 = require('uuid/v1');
 var xmpp = require('simple-xmpp');
+var caldav = require('node-caldav')
 
 const env = process.env;
-
-var caldav = require('@datafire/caldav').create({
-    username: env.USER,
-    password: env.PASSWORD,
-    server: env.SERVER,
-    basePath: "/remote.php/dav",
-    principalPath: "/principals"
-});
 
 var myMaster = env.MASTER
 var jid = env.JABBERID
 var pwd = env.JABBERPASSWORD
 var server = env.JABBERSERVER
 var port = 5222;
-
-/*
-caldav.listCalendars({}).then(data => {
-      console.log(data);
-});
-
-
-caldav.listEvents({ "filename": "/calendars/" + env.USER + "/" + env.CALENDER
-}).then(data => {
-      console.log(data);
-});
-*/
 
 function createEventFrom(text) {
 
@@ -50,12 +31,18 @@ function createEventFrom(text) {
     }
 
     try {
-        caldav.createEvent({
-            start: startDate.toString(),
-            end: endDate.toString(),
+        caldav.addEvent({
+            startDate: startDate,
+            endDate: endDate,
+            tzid: "Europe/London",
             summary: eventName,
-            filename: "/calendars/" + env.USER + "/" + env.CALENDER + "/" + eventFilename
-        }).then(data => {console.log(data)});
+            key: eventFilename
+            },
+            env.CALENDARURL,
+            env.USER,
+            env.PASSWORD,
+            function(err, data) {console.log(err, data)}
+        );
 
         return summary
     }
