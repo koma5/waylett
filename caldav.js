@@ -1,5 +1,6 @@
 var chrono = require('chrono-node');
 var moment = require('moment');
+var tz = require('moment-timezone');
 var uuidv1 = require('uuid/v1');
 var xmpp = require('simple-xmpp');
 var caldav = require('node-caldav')
@@ -36,6 +37,7 @@ function createEventFrom(text) {
         caldav.addEvent({
             startDate: startDate,
             endDate: endDate,
+            allDayEvent: false,
             tzid: "Europe/London",
             summary: eventName,
             key: eventFilename
@@ -68,7 +70,16 @@ xmpp.on('error', function(err) {
 xmpp.on('chat', function(from, message) {
         console.log(from, message)
         if (from === myMaster) {
-            xmpp.send(from, createEventFrom(message));
+            if (message === "list") {
+
+                listEvents(24, (eventsString) => {
+                    xmpp.send(from, eventsString);
+                })
+
+            }
+            else {
+                xmpp.send(from, createEventFrom(message));
+            }
         }
         else {
             xmpp.send(from, "sorry. You are not my master!");
@@ -81,3 +92,27 @@ xmpp.connect({
         host: server,
         port: port
 });
+
+function listEvents(hours, callback) {
+
+    var dateQueryStart = new moment()
+
+    caldav.getEvents(
+        env.CALENDARURL,
+        env.USER, env.PASSWORD,
+        dateQueryStart,
+        dateQueryStart.clone().add(hours, "hours"),
+        function(blahh, results) {
+            var eventList = ['\n'];
+
+            results.forEach(function(i) {
+                eventList.push(`${moment(i.startDate.toString()).tz(i.startDate.timezone)} ${i.summary}`);
+            });
+
+            callback(eventList.join('\n'));
+        }
+    );
+
+
+
+}
