@@ -19,7 +19,7 @@ var scheduleFreq = {count: 1, period: 'hours'};
 var wayletter = null;
 scheduleEvents(scheduleFreq);
 
-function createEventFrom(text) {
+function createEventFrom(text, callback) {
 
     var parseResults = chrono.parse(text)
     var eventFilename = uuidv1();
@@ -29,11 +29,11 @@ function createEventFrom(text) {
         var startDate = parseResults[0].start.date();
         try {
             var endDate = parseResults[0].end.date();
-            var summary = [eventName, '\n', startDate, '\n', endDate].join(' ')
+            var summary = [startDate, '\n', endDate].join(' ')
         }
         catch(error){
             var endDate = startDate;
-            var summary = [eventName, '\n', startDate].join(' ')
+            var summary = [ startDate ].join(' ')
         }
     }
 
@@ -51,13 +51,19 @@ function createEventFrom(text) {
             env.CALENDARURL,
             env.USER,
             env.PASSWORD,
-            function(err, data) {console.log(err, data)}
+            function(err) {
+                if(err) {
+                    callback("caldav was not happy.")
+                    log(err);
+                }
+                else {
+                    callback(summary);
+                }
+            }
         );
-
-        return summary
     }
     catch(error) {
-        return "failed to parse a date."
+        callback("failed to parse a date.")
     }
 
 
@@ -79,16 +85,18 @@ xmpp.on('chat', function(from, message) {
             if (message === "list") {
 
                 listEvents({count: 1, period: 'days'}, (eventsString) => {
-                    xmpp.send(from, eventsString);
+                    send(eventsString);
                 })
 
             }
             else {
-                xmpp.send(from, createEventFrom(message));
+                createEventFrom(message, (eventCreationResponse) => {
+                    send(eventCreationResponse);
+                })
             }
         }
         else {
-            xmpp.send(from, "sorry. You are not my master!");
+            send("sorry. You are not my master!");
         }
 });
 
@@ -102,15 +110,15 @@ xmpp.connect({
 function scheduleEvents(scheduleFreq) {
     getEvents(scheduleFreq, function(events) {
         var eventList = [];
-
+        log("scheduling, scheduling")
         events.forEach((i) => {
             var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone).toDate()
             var job = schedule.scheduleJob(
                 scheduleDate, (text) => {
                     var message = i.summary ? i.summary : "sach bescheid. -Beschaaaid!"
-                    xmpp.send(myMaster, message)
+                    send(message)
                 });
-            log("scheduled: " + job.nextInvocation());
+            log("scheduled: " + job.nextInvocation() + " " + i.summary);
         })
 
 
@@ -145,3 +153,5 @@ function getEvents(scheduleFreq, callback) {
 }
 
 function log(message) {console.log(moment().toString() + ' ' + message);}
+function send(message) {xmpp.send(myMaster, message); log("sent: " + message.replace(/\n/g, ' '))}
+
