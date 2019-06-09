@@ -66,7 +66,7 @@ function createEventFrom(text) {
 
 
 xmpp.on('online', function(data) {
-        console.log('Connected with JID: ' + data.jid.user);
+        log('Connected with JID: ' + data.jid.user);
 });
 
 xmpp.on('error', function(err) {
@@ -74,7 +74,7 @@ xmpp.on('error', function(err) {
 });
 
 xmpp.on('chat', function(from, message) {
-        console.log(from, message)
+        log(from + ' ' + message)
         if (from === myMaster) {
             if (message === "list") {
 
@@ -106,8 +106,11 @@ function scheduleEvents(scheduleFreq) {
         events.forEach((i) => {
             var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone).toDate()
             var job = schedule.scheduleJob(
-                scheduleDate, (text) => {xmpp.send(myMaster, i.summary)});
-            console.log(moment().toISOString() + " scheduled: " + job.nextInvocation());
+                scheduleDate, (text) => {
+                    var message = i.summary ? i.summary : "sach bescheid. -Beschaaaid!"
+                    xmpp.send(myMaster, message)
+                });
+            log("scheduled: " + job.nextInvocation());
         })
 
 
@@ -140,3 +143,5 @@ function getEvents(scheduleFreq, callback) {
             callback(results ? results : []);
         });
 }
+
+function log(message) {console.log(moment().toString() + ' ' + message);}
