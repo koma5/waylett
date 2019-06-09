@@ -94,6 +94,17 @@ xmpp.connect({
 });
 
 function listEvents(hours, callback) {
+    getEvents(hours, function(events){
+        var eventList = ['\n'];
+        events.forEach((i) => {
+            eventList.push(`${moment(i.startDate.toString()).tz(i.startDate.timezone)} ${i.summary}`);
+        });
+        callback(eventList.join('\n'))
+    })
+
+}
+
+function getEvents(hours, callback) {
 
     var dateQueryStart = new moment()
 
@@ -103,16 +114,6 @@ function listEvents(hours, callback) {
         dateQueryStart,
         dateQueryStart.clone().add(hours, "hours"),
         function(blahh, results) {
-            var eventList = ['\n'];
-
-            results.forEach(function(i) {
-                eventList.push(`${moment(i.startDate.toString()).tz(i.startDate.timezone)} ${i.summary}`);
-            });
-
-            callback(eventList.join('\n'));
-        }
-    );
-
-
-
+            callback(results);
+        });
 }
