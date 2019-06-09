@@ -58,6 +58,16 @@ function createEventFrom(text, callback) {
                 }
                 else {
                     callback(summary);
+
+                    if(wayletter.nextInvocation()._date >= startDate ){
+                        console.log(eventName)
+                        schedule.scheduleJob(startDate, (text) => {
+                            var message = eventName ? eventName : "sach bescheid. -Beschaaaid!"
+                            console.log(message)
+                            send(message)
+                        });
+                    }
+
                 }
             }
         );
