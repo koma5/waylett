@@ -14,8 +14,7 @@ var pwd = env.JABBERPASSWORD
 var server = env.JABBERSERVER
 var port = 5222;
 
-/* toDO var scheduleFreq = {count: 1, period: 'hours'};*/
-var scheduleFreq = 1;
+var scheduleFreq = {count: 1, period: 'hours'};
 
 var wayletter = null;
 scheduleEvents(scheduleFreq);
@@ -79,7 +78,7 @@ xmpp.on('chat', function(from, message) {
         if (from === myMaster) {
             if (message === "list") {
 
-                listEvents(24, (eventsString) => {
+                listEvents({count: 1, period: 'days'}, (eventsString) => {
                     xmpp.send(from, eventsString);
                 })
 
@@ -100,8 +99,8 @@ xmpp.connect({
         port: port
 });
 
-function scheduleEvents(hours) {
-    getEvents(hours, function(events) {
+function scheduleEvents(scheduleFreq) {
+    getEvents(scheduleFreq, function(events) {
         var eventList = [];
 
         events.forEach((i) => {
@@ -114,11 +113,11 @@ function scheduleEvents(hours) {
 
     });
 
-    wayletter = schedule.scheduleJob(moment().add(scheduleFreq, 'hours').toDate(), () => {scheduleEvents(scheduleFreq)})
+    wayletter = schedule.scheduleJob(moment().add(scheduleFreq.count, scheduleFreq.period).toDate(), () => {scheduleEvents(scheduleFreq)})
 }
 
-function listEvents(hours, callback) {
-    getEvents(hours, function(events){
+function listEvents(scheduleFreq, callback) {
+    getEvents(scheduleFreq, function(events){
         var eventList = ['\n'];
         events.forEach((i) => {
             eventList.push(`${moment(i.startDate.toString()).tz(i.startDate.timezone)} ${i.summary}`);
@@ -128,7 +127,7 @@ function listEvents(hours, callback) {
 
 }
 
-function getEvents(hours, callback) {
+function getEvents(scheduleFreq, callback) {
 
     var dateQueryStart = new moment()
 
@@ -136,7 +135,7 @@ function getEvents(hours, callback) {
         env.CALENDARURL,
         env.USER, env.PASSWORD,
         dateQueryStart,
-        dateQueryStart.clone().add(hours, "hours"),
+        dateQueryStart.clone().add(scheduleFreq.count, scheduleFreq.period),
         function(blahh, results) {
             callback(results ? results : []);
         });
