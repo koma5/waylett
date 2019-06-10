@@ -145,7 +145,7 @@ function scheduleEvents(scheduleFreq) {
 
             var timezone = (i.startDate.timezone === 'Z') ? 'Zulu': i.startDate.timezone
 
-            var scheduleDate = moment(i.startDate.toString()).tz(timezone)
+            var scheduleDate = moment.tz(i.startDate.toString(), timezone)
             scheduleSingleEvent(scheduleDate, i.summary);
         })
 
@@ -160,7 +160,8 @@ function listEvents(scheduleFreq, callback) {
         var eventList = [''];
         events.forEach((i) => {
             var timezone = (i.startDate.timezone === 'Z') ? 'Zulu': i.startDate.timezone
-            eventList.push(`${moment(i.startDate.toString()).tz(timezone)} ${i.summary}`);
+            console.log(i.startDate)
+            eventList.push(`${moment.tz(i.startDate.toString(), timezone)} ${i.summary}`);
         });
         callback(eventList.join('\n'))
     })
