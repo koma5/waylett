@@ -8,7 +8,8 @@ var schedule = require('node-schedule')
 
 const env = process.env;
 
-var timezone = env.TIMEZONE;
+var timezone = env.WAYLETTTIMEZONE;
+console.log(timezone)
 
 moment.tz.setDefault(timezone);
 
@@ -128,7 +129,7 @@ xmpp.getRoster();
 
 function scheduleSingleEvent(startDate, name) {
     var job = schedule.scheduleJob(
-        startDate, () => {
+        startDate.toDate(), () => {
             var message = name ? name : "Beschaaaid!"
             send(message)
         });
@@ -141,7 +142,7 @@ function scheduleEvents(scheduleFreq) {
         var eventList = [];
         log("scheduling, scheduling every " + scheduleFreq.count + " " + scheduleFreq.period)
         events.forEach((i) => {
-            var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone).toDate()
+            var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone)
             scheduleSingleEvent(scheduleDate, i.summary);
         })
 
