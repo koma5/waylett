@@ -128,7 +128,8 @@ function scheduleSingleEvent(startDate, name) {
             var message = name ? name : "Beschaaaid!"
             send(message)
         });
-    log("scheduled: " + job.nextInvocation() + " " + name);
+    var next = job ? job.nextInvocation() : '... scheduling failed.'
+    log("scheduled: " + next + " " + name);
 }
 
 function scheduleEvents(scheduleFreq) {
