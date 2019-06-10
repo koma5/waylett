@@ -142,7 +142,10 @@ function scheduleEvents(scheduleFreq) {
         var eventList = [];
         log("scheduling, scheduling every " + scheduleFreq.count + " " + scheduleFreq.period)
         events.forEach((i) => {
-            var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone)
+
+            var timezone = (i.startDate.timezone === 'Z') ? 'Zulu': i.startDate.timezone
+
+            var scheduleDate = moment(i.startDate.toString()).tz(timezone)
             scheduleSingleEvent(scheduleDate, i.summary);
         })
 
@@ -156,7 +159,8 @@ function listEvents(scheduleFreq, callback) {
     getEvents(scheduleFreq, function(events){
         var eventList = [''];
         events.forEach((i) => {
-            eventList.push(`${moment(i.startDate.toString()).tz(i.startDate.timezone)} ${i.summary}`);
+            var timezone = (i.startDate.timezone === 'Z') ? 'Zulu': i.startDate.timezone
+            eventList.push(`${moment(i.startDate.toString()).tz(timezone)} ${i.summary}`);
         });
         callback(eventList.join('\n'))
     })
