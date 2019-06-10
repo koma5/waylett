@@ -8,6 +8,10 @@ var schedule = require('node-schedule')
 
 const env = process.env;
 
+var timezone = env.TIMEZONE;
+
+moment.tz.setDefault(timezone);
+
 var myMaster = env.MASTER
 var jid = env.JABBERID
 var pwd = env.JABBERPASSWORD
@@ -26,9 +30,9 @@ function createEventFrom(text, callback) {
 
     if (parseResults.length > 0) {
         var eventName =  text.replace(parseResults[0].text, '').trim();
-        var startDate = parseResults[0].start.date();
+        var startDate = moment(parseResults[0].start.date());
         try {
-            var endDate = parseResults[0].end.date();
+            var endDate = moment(parseResults[0].end.date());
             var summary = [startDate, '\n', endDate].join(' ')
         }
         catch(error){
@@ -44,7 +48,7 @@ function createEventFrom(text, callback) {
             startDate: startDate,
             endDate: endDate,
             allDayEvent: false,
-            tzid: "Europe/London",
+            tzid: timezone,
             summary: eventName,
             key: eventFilename
             },
