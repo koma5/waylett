@@ -105,12 +105,22 @@ xmpp.on('chat', function(from, message) {
         }
 });
 
+xmpp.on('subscribe', function(from) {
+        if (from === myMaster) {
+                    xmpp.acceptSubscription(from);
+                }
+});
+
+
 xmpp.connect({
         jid: jid,
         password: pwd,
         host: server,
         port: port
 });
+
+xmpp.subscribe(myMaster);
+xmpp.getRoster();
 
 function scheduleSingleEvent(startDate, name) {
     var job = schedule.scheduleJob(
@@ -138,7 +148,7 @@ function scheduleEvents(scheduleFreq) {
 
 function listEvents(scheduleFreq, callback) {
     getEvents(scheduleFreq, function(events){
-        var eventList = ['\n'];
+        var eventList = [''];
         events.forEach((i) => {
             eventList.push(`${moment(i.startDate.toString()).tz(i.startDate.timezone)} ${i.summary}`);
         });
