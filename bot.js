@@ -14,7 +14,7 @@ var pwd = env.JABBERPASSWORD
 var server = env.JABBERSERVER
 var port = 5222;
 
-var scheduleFreq = {count: 1, period: 'hours'};
+var scheduleFreq = {count: 1, period: 'minutes'};
 
 var wayletter = null;
 scheduleEvents(scheduleFreq);
@@ -59,13 +59,8 @@ function createEventFrom(text, callback) {
                 else {
                     callback(summary);
 
-                    if(wayletter.nextInvocation()._date >= startDate ){
-                        console.log(eventName)
-                        schedule.scheduleJob(startDate, (text) => {
-                            var message = eventName ? eventName : "sach bescheid. -Beschaaaid!"
-                            console.log(message)
-                            send(message)
-                        });
+                    if(wayletter.nextInvocation()._date >= startDate ) {
+                        scheduleSingleEvent(startDate, eventName);
                     }
 
                 }
@@ -117,18 +112,22 @@ xmpp.connect({
         port: port
 });
 
+function scheduleSingleEvent(startDate, name) {
+    var job = schedule.scheduleJob(
+        startDate, () => {
+            var message = name ? name : "Beschaaaid!"
+            send(message)
+        });
+    log("scheduled: " + job.nextInvocation() + " " + name);
+}
+
 function scheduleEvents(scheduleFreq) {
     getEvents(scheduleFreq, function(events) {
         var eventList = [];
         log("scheduling, scheduling")
         events.forEach((i) => {
             var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone).toDate()
-            var job = schedule.scheduleJob(
-                scheduleDate, (text) => {
-                    var message = i.summary ? i.summary : "sach bescheid. -Beschaaaid!"
-                    send(message)
-                });
-            log("scheduled: " + job.nextInvocation() + " " + i.summary);
+            scheduleSingleEvent(scheduleDate, i.summary);
         })
 
 
