@@ -14,7 +14,7 @@ var pwd = env.JABBERPASSWORD
 var server = env.JABBERSERVER
 var port = 5222;
 
-var scheduleFreq = {count: 1, period: 'minutes'};
+var scheduleFreq = {count: 15, period: 'minutes'};
 
 var wayletter = null;
 scheduleEvents(scheduleFreq);
@@ -124,7 +124,7 @@ function scheduleSingleEvent(startDate, name) {
 function scheduleEvents(scheduleFreq) {
     getEvents(scheduleFreq, function(events) {
         var eventList = [];
-        log("scheduling, scheduling")
+        log("scheduling, scheduling every " + scheduleFreq.count + " " + scheduleFreq.period)
         events.forEach((i) => {
             var scheduleDate = moment(i.startDate.toString()).tz(i.startDate.timezone).toDate()
             scheduleSingleEvent(scheduleDate, i.summary);
