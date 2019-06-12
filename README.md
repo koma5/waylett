@@ -41,7 +41,7 @@ npm start
 
 # or run the docker image from above ^.
 
-docker run --restart always - d waylett
+docker run --restart always -d waylett
 ```
 
 ## attribution
