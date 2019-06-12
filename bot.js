@@ -86,7 +86,8 @@ xmpp.on('online', function(data) {
 });
 
 xmpp.on('error', function(err) {
-        console.error("error:", JSON.stringify(err));
+        log("error:", JSON.stringify(err));
+        process.exit(1);
 });
 
 xmpp.on('chat', function(from, message) {
@@ -165,7 +166,6 @@ function listEvents(scheduleFreq, callback) {
         var eventList = [''];
         events.forEach((i) => {
             var timezone = (i.startDate.timezone === 'Z') ? 'Zulu': i.startDate.timezone
-            console.log(i.startDate)
             eventList.push(`${moment.tz(i.startDate.toString(), timezone)} ${i.summary}`);
         });
         callback(eventList.join('\n'))
