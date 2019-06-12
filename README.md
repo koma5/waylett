@@ -29,13 +29,19 @@ export WAYLETTTIMEZONE="Europe/London"
 ```
 git clone https://github.com/koma5/waylett && cd waylett
 npm install
+
+# or run it as docker container
+docker build -t waylett .
 ```
 
 
 ## run
 ```
-. .env
-node bot.js
+npm start
+
+# or run the docker image from above ^.
+
+docker run --restart always - d waylett
 ```
 
 ## attribution
