@@ -116,6 +116,11 @@ xmpp.on('subscribe', function(from) {
                 }
 });
 
+xmpp.on('error', function(err) {
+    log(err);
+    process.exit(1);
+});
+
 
 xmpp.connect({
         jid: jid,
